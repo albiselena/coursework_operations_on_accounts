@@ -1,4 +1,4 @@
-from src.functions import load_data, sorting_executed, sorting_data_time
+from src.functions import load_data, sorting_executed, sorting_data_time, last_five_actions
 from config import ROOT_DIR
 import os
 
@@ -32,4 +32,25 @@ def test_sorting_data_time():
         {"id": 1, 'date': '13.01.2022'}
     ]
     assert sorting_data_time(data) == expected
+
+
+def test_last_five_actions():
+    """Проверка работоспособности функции для вывода последних 5 операций"""
+    data = [
+        {"id": 1, 'state': 'EXECUTED'},
+        {"id": 2, 'state': 'CANCELED'},
+        {"id": 3, 'state': 'EXECUTED'},
+        {"id": 4, 'state': 'EXECUTED'},
+        {"id": 5, 'state': 'EXECUTED'},
+        {"id": 6, 'state': 'EXECUTED'},
+        {"id": 7, 'state': 'EXECUTED'}
+    ]
+    expected = [
+        {"id": 1, 'state': 'EXECUTED'},
+        {"id": 2, 'state': 'CANCELED'},
+        {"id": 3, 'state': 'EXECUTED'},
+        {"id": 4, 'state': 'EXECUTED'},
+        {"id": 5, 'state': 'EXECUTED'}
+    ]
+    assert last_five_actions(data) == expected
 
