@@ -1,24 +1,21 @@
 import json
-import pprint
 from config import ROOT_DIR
 import os
 import datetime
-
-pp = pprint.PrettyPrinter(indent=4)
 
 # путь к файлу с операциями и файлу с данными о клиентах и т.д.
 operation_path = os.path.join(ROOT_DIR, "src", 'operations.json')
 
 
 def load_data(operation_path):
-    """функция распаковки файла json"""
+    """Функция распаковки файла json"""
     with open(operation_path, 'r') as file:
         file = json.loads(file.read())
     return file
 
 
 def sorting_executed(file):
-    """сортировка выполненных операций по ключу state, если операция выполнена EXECUTED
+    """Сортировка выполненных операций по ключу state, если операция выполнена EXECUTED
     перекладываю в другой словарь"""
     validated = []
     for element in file:
@@ -27,13 +24,13 @@ def sorting_executed(file):
     return validated
 
 
-# переменная validated с отсортированным словарём с выполеными операциями
+# переменная validated с отсортированным словарём с выполненными операциями
 validated = sorting_executed(load_data(operation_path))
 
 
 def sorting_data_time(validated):
-    """Функция сортирует по дате(от последних оперций к более старым)
-    и перводит дату в формат ДД.ММ.ГГГГ"""
+    """Функция сортирует по дате(от последних операций к более старым)
+    и переводит дату в формат ДД.ММ.ГГГГ"""
     validated.sort(key=lambda x: x.get("date"), reverse=True)
     for element in validated:
         element["date"] = datetime.datetime.strptime(element["date"], '%Y-%m-%dT%H:%M:%S.%f').strftime('%d.%m.%Y')
@@ -51,7 +48,7 @@ validated_dated = last_five_actions(sorting_data_time(validated))
 
 
 def masks_the_result(validated_dated):
-    """Функция маскирует результат по ключу  to. Если в значении есть слово 'Счет' маскирует:
+    """Функция маскирует результат по ключу 'to'. Если в значении есть слово 'Счет' маскирует:
     **XXXX, если же карты тогда: XXXX XX** **** XXXX"""
     for index in validated_dated:
         if 'Счет' in index["to"]:
@@ -63,10 +60,10 @@ def masks_the_result(validated_dated):
 
 
 def mask_the_result_from(masks_the_result):
-    """Функция маскирует результат по ключу  from. Если ключ from существует в словаре и
+    """Функция маскирует результат по ключу 'from'. Если ключ 'from' существует в словаре и
     если в значении есть слово 'Счет' маскирует: **XXXX, если же любые карты тогда: XXXX XX** **** XXXX"""
     for index in masks_the_result:
-        if index.get('from') != None:
+        if index.get('from') is not None:
             if 'Счет' in index["from"]:
                 index["from"] = index["from"][:5] + "**" + index["from"][-4:]
             else:
@@ -74,13 +71,14 @@ def mask_the_result_from(masks_the_result):
                                  + "****" + " " + index["from"][-5:-1])
     return masks_the_result
 
-#переменная со словарём уже замаскированных данных карт и счетов
-result = mask_the_result_from(masks_the_result(validated_dated))
+
+# переменная со словарём уже замаскированных данных карт и счетов
+ready_dictionary = mask_the_result_from(masks_the_result(validated_dated))
 
 
-def formatted_information(result):
+def formatted_information(ready_dictionary):
     """Функция вывода информации в читаемом, нужном виде"""
-    for index in result:
+    for index in ready_dictionary:
         if index.get('from') is not None:
             print(f"{index['date']} {index['description']}\n"
                   f"{index.get('from')} -> {index['to']}\n"
@@ -91,4 +89,4 @@ def formatted_information(result):
                   f"{index['operationAmount']['amount']} {index['operationAmount']['currency']['name']}\n")
 
 
-formatted_information(result)
+#formatted_information(ready_dictionary)
