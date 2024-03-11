@@ -54,8 +54,8 @@ def masks_the_result(validated_dated):
         if 'Счет' in index["to"]:
             index["to"] = index["to"][:5] + "**" + index["to"][-4:]
         else:
-            index["to"] = (index["to"][0:-12] + " " + index["to"][-13:-11] + "**" + " "
-                           + "****" + " " + index["to"][-5:-1])
+            index["to"] = (index["to"][0:-12] + " " + index["to"][-12:-10] + "**" + " "
+                           + "****" + " " + index["to"][-4:])
     return validated_dated
 
 
@@ -67,26 +67,10 @@ def mask_the_result_from(masks_the_result):
             if 'Счет' in index["from"]:
                 index["from"] = index["from"][:5] + "**" + index["from"][-4:]
             else:
-                index["from"] = (index["from"][0:-12] + " " + index["from"][-13:-11] + "**" + " "
-                                 + "****" + " " + index["from"][-5:-1])
+                index["from"] = (index["from"][0:-12] + " " + index["from"][-12:-10] + "**" + " "
+                                 + "****" + " " + index["from"][-4:])
     return masks_the_result
 
 
 # переменная со словарём уже замаскированных данных карт и счетов
 ready_dictionary = mask_the_result_from(masks_the_result(validated_dated))
-
-
-def formatted_information(ready_dictionary):
-    """Функция вывода информации в читаемом, нужном виде"""
-    for index in ready_dictionary:
-        if index.get('from') is not None:
-            print(f"{index['date']} {index['description']}\n"
-                  f"{index.get('from')} -> {index['to']}\n"
-                  f"{index['operationAmount']['amount']} {index['operationAmount']['currency']['name']}\n")
-        if index.get('from') is None:
-            print(f"{index['date']} {index['description']}\n"
-                  f"{index['to']}\n"
-                  f"{index['operationAmount']['amount']} {index['operationAmount']['currency']['name']}\n")
-
-
-#formatted_information(ready_dictionary)

@@ -1,4 +1,5 @@
-from src.functions import load_data, sorting_executed, sorting_data_time, last_five_actions
+from src.functions import load_data, sorting_executed, sorting_data_time, last_five_actions, masks_the_result, \
+    mask_the_result_from
 from config import ROOT_DIR
 import os
 
@@ -53,4 +54,37 @@ def test_last_five_actions():
         {"id": 5, 'state': 'EXECUTED'}
     ]
     assert last_five_actions(data) == expected
+
+
+def test_masks_the_result():
+    """Проверка работоспособности функции для маскировки результата по ключу 'to' """
+    data = [
+        {'to': 'Счет 96292138399386853355'},
+        {'to': 'Maestro 6890749237669619'},
+        {'to': 'МИР 2052809263194182'}
+    ]
+    expected = [
+        {'to': 'Счет **3355'},
+        {'to': 'Maestro 6890 74** **** 9619'},
+        {'to': 'МИР 2052 80** **** 4182'}
+    ]
+    assert masks_the_result(data) == expected
+
+def test_mask_the_result_from():
+    """Проверка работоспособности функции для маскировки результата по ключу 'from' которого
+    может и не быть"""
+    data = [
+        {'id': 1},
+        {'id': 2, 'from': 'Счет 96292138399386853355'},
+        {'id': 3, 'from': 'Maestro 6890749237669619'},
+        {'id': 4, 'from': 'МИР 2052809263194182'}
+    ]
+    expected = [
+        {'id': 1},
+        {'id': 2, 'from': 'Счет **3355'},
+        {'id': 3, 'from': 'Maestro 6890 74** **** 9619'},
+        {'id': 4, 'from': 'МИР 2052 80** **** 4182'}
+    ]
+    assert mask_the_result_from(data) == expected
+
 
